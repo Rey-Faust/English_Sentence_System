@@ -1,0 +1,1 @@
+{"name":"english-sentence-system","private":true,"type":"module","scripts":{"build":"node scripts/build.mjs","test":"node --test scripts/*.test.mjs"},"dependencies":{"@supabase/supabase-js":"^2.57.0"},"devDependencies":{"esbuild":"^0.25.0"}}
