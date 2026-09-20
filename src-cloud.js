@@ -27,7 +27,7 @@ async function loadRecords(){
    if(error)throw error;rows.push(...data);if(data.length<1000)break;
   }
   if(user?.id!==uid)return;
-  window.setCloudRecords(rows.map(x=>({...x.payload,recordId:x.id})));ready=true;status();
+  ready=true;window.setCloudRecords(rows.map(x=>({...x.payload,recordId:x.id})));status();
  }catch(e){status('云端记录读取失败：'+e.message)}
 }
 window.cloud={
