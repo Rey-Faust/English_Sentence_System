@@ -3,7 +3,7 @@ const cfg=window.APP_CONFIG||{};
 const client=cfg.supabaseUrl&&cfg.supabaseAnonKey?createClient(cfg.supabaseUrl,cfg.supabaseAnonKey):null;
 let user=null, ready=false;
 const panel=document.createElement('div');
-panel.className='card';panel.style.cssText='margin-bottom:20px';
+panel.className='card cloud-panel';panel.style.cssText='margin-bottom:20px';
 document.querySelector('main').prepend(panel);
 const escape=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
 function status(message=''){
