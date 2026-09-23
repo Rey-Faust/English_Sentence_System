@@ -28,3 +28,12 @@ test('account and Core drawer roots are available before deferred scripts',()=>{
  assert.match(html,/id="accountRoot"/);assert.match(html,/id="drawerRoot"/);
  assert.ok(html.indexOf('id="accountRoot"')<html.indexOf('src="cloud.js'));
 });
+
+test('mixed training UI includes fast stages and accessible touch controls',()=>{
+ const app=readFileSync('src-app.js','utf8');
+ assert.match(app,/Choose.*Build.*Speak \/ Write/s);
+ assert.match(app,/questionType:exercise\.type/);
+ assert.match(app,/responseTimeMs/);
+ assert.match(html,/\.objective-option\{min-height:58px/);
+ assert.match(html,/\.word-bank button,.sentence-builder button\{min-height:48px/);
+});

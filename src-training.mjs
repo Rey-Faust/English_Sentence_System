@@ -66,3 +66,52 @@ export function summarizeSession(results){
   weakest:sorted.at(-1)
  };
 }
+
+const clean=value=>String(value??'').trim();
+const normalized=value=>clean(value).toLowerCase().replace(/[\s.,!?;:'"’]+/g,' ').trim();
+const unique=values=>new Set(values.map(normalized)).size===values.length;
+
+export function selectConstructionType(records=[]){
+ const previous=[...records].reverse().find(record=>['fill','reorder'].includes(record.questionType));
+ return previous?.questionType==='fill'?'reorder':'fill';
+}
+
+export function validateExercisePack(input,structures,constructionType='fill'){
+ if(!input||!Array.isArray(input.rounds)||input.rounds.length!==3||structures.length!==3)throw Error('The AI exercise pack is incomplete. Please retry.');
+ const [choice,construction,production]=input.rounds;
+ if(choice?.type!=='choice'||!clean(choice.prompt)||!Array.isArray(choice.options)||choice.options.length!==4||choice.options.some(option=>!clean(option))||!unique(choice.options)||!Number.isInteger(choice.correctIndex)||choice.correctIndex<0||choice.correctIndex>3||!clean(choice.hint)||!clean(choice.explanation))throw Error('The multiple-choice exercise is invalid. Please retry.');
+ if(construction?.type!==constructionType||!clean(construction.prompt)||!clean(construction.hint)||!clean(construction.explanation))throw Error('The sentence-building exercise is invalid. Please retry.');
+ let normalizedConstruction;
+ if(constructionType==='fill'){
+  if((construction.prompt.match(/___/g)||[]).length!==1||!Array.isArray(construction.wordBank)||construction.wordBank.length!==4||construction.wordBank.some(word=>!clean(word))||!unique(construction.wordBank)||!Number.isInteger(construction.correctIndex)||construction.correctIndex<0||construction.correctIndex>3)throw Error('The fill-in exercise has no unique answer. Please retry.');
+  normalizedConstruction={...construction,wordBank:construction.wordBank.map(clean),correctAnswer:clean(construction.wordBank[construction.correctIndex])};
+ }else{
+  if(!Array.isArray(construction.tokens)||construction.tokens.length<3||construction.tokens.length>12||construction.tokens.some(token=>!clean(token))||!unique(construction.tokens)||!Array.isArray(construction.correctOrder)||construction.correctOrder.length!==construction.tokens.length||!unique(construction.correctOrder))throw Error('The sentence-order exercise is invalid. Please retry.');
+  const tokenSet=new Set(construction.tokens.map(normalized));
+  if(construction.correctOrder.some(token=>!tokenSet.has(normalized(token))))throw Error('The sentence-order answer is invalid. Please retry.');
+  normalizedConstruction={...construction,tokens:construction.tokens.map(clean),correctOrder:construction.correctOrder.map(clean),correctAnswer:construction.correctOrder.map(clean).join(' ')};
+ }
+ if(production?.type!=='production'||!clean(production.question))throw Error('The speaking exercise is invalid. Please retry.');
+ return {rounds:[
+  {...choice,options:choice.options.map(clean),correctAnswer:clean(choice.options[choice.correctIndex]),structureId:structures[0]['#']},
+  {...normalizedConstruction,structureId:structures[1]['#']},
+  {...production,question:clean(production.question),structureId:structures[2]['#']}
+ ]};
+}
+
+export function objectiveAnswerText(exercise,answer){
+ if(exercise.type==='choice')return clean(exercise.options[Number(answer)]);
+ if(exercise.type==='fill')return clean(answer);
+ if(exercise.type==='reorder')return Array.isArray(answer)?answer.map(clean).join(' '):clean(answer);
+ return clean(answer);
+}
+
+export function gradeObjective(exercise,answer){
+ if(!exercise||!['choice','fill','reorder'].includes(exercise.type))return false;
+ return normalized(objectiveAnswerText(exercise,answer))===normalized(exercise.correctAnswer);
+}
+
+export function objectiveScore(isCorrect,attemptCount){
+ if(!isCorrect)return 2;
+ return attemptCount<=1?5:4;
+}

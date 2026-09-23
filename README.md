@@ -1,6 +1,6 @@
 # English Sentence System
 
-Core 15 learning cards, question grammar, a three-round adaptive AI conversation trainer, training history and weakness analysis. The interface preserves the complete 3.2 learning content and supports browser speech-to-text as a progressive enhancement.
+Core 15 learning cards, question grammar, a three-round adaptive trainer, training history and weakness analysis. Each session moves from multiple-choice recognition to fill/reorder construction and then to AI-coached text or voice production. Objective rounds grade locally for immediate feedback; a complete session uses about three AI requests. The interface preserves the complete 3.2 learning content and supports browser speech-to-text as a progressive enhancement.
 
 Frontend: GitHub Pages. Backend: Supabase Auth, RLS-protected training records and the `english-coach` Edge Function. DeepSeek keys exist only in server secrets. Browser users can study cards without signing in; cloud history and AI require an invited account.
 
@@ -20,4 +20,4 @@ AI calls verify the user, enforce the configured owner email, and use an atomic 
 
 ## Validation
 
-Automated checks verify all 15 knowledge cards and required fields, legacy link routing, adaptive selection without duplicate structures, the Precision third round, progressive voice fallback, script parsing, and safe rendering of dynamic text. Deployment acceptance additionally requires live sign-in, save/reload, unauthenticated rejection and an AI response. A successful build alone does not prove backend readiness.
+Automated checks verify all 15 knowledge cards and required fields, exercise-pack validation, local grading and retry scoring, construction-type rotation, legacy link routing, adaptive selection without duplicate structures, the Precision third round, progressive voice fallback, script parsing, and safe rendering of dynamic text. Deployment acceptance additionally requires live sign-in, all three round types, save/reload, unauthenticated rejection and AI feedback. A successful build alone does not prove backend readiness.

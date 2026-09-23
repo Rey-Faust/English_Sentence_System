@@ -62,7 +62,7 @@ window.cloud={
  openAccount:()=>setOpen(true),
  async add(record){
   if(!user||!ready)throw Error('请先登录并等待云端记录载入。');
-  const id=record.recordId||crypto.randomUUID();const {error}=await client.from('training_records').insert({id,user_id:user.id,payload:record});if(error)throw error;return {...record,recordId:id};
+  const id=record.recordId||crypto.randomUUID();const payload={...record,recordId:id};const {error}=await client.from('training_records').insert({id,user_id:user.id,payload});if(error&&error.code!=='23505')throw error;return payload;
  },
  async clear(){if(!user||!ready)throw Error('请先登录。');const {error}=await client.from('training_records').delete().eq('user_id',user.id);if(error)throw error},
  async coach(messages){
